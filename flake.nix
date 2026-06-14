@@ -10,22 +10,31 @@
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs { inherit system; };
+        pythonEnv = pkgs.python3.withPackages (ps: with ps; [
+          pip
+          virtualenv
+          curl-cffi
+          cryptography
+        ]);
       in
       {
         devShells.default = pkgs.mkShell {
-          buildInputs = with pkgs; [
-            python3
-            python3Packages.pip
-            python3Packages.virtualenv
-            mpv
+          buildInputs = [
+            pythonEnv
+            pkgs.mpv
           ];
 
           shellHook = ''
             echo "🌌 Welcome to the DaoStream Nix devShell!"
             if [ -f "requirements.txt" ]; then
               if [ ! -d ".venv" ]; then
-                echo "Initializing virtual environment (.venv)..."
-                python3 -m venv .venv
+                echo "Initializing virtual environment (.venv with system site packages)..."
+                python3 -m venv --system-site-packages .venv
+              else
+                # Ensure system-site-packages is enabled if .venv already exists
+                if [ -f ".venv/pyvenv.cfg" ]; then
+                  sed -i 's/include-system-site-packages = false/include-system-site-packages = true/g' .venv/pyvenv.cfg
+                fi
               fi
               source .venv/bin/activate
               echo "Verifying Python dependencies..."
