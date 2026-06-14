@@ -154,3 +154,6 @@ anichin_latest.json
 .vscode/
 *.swp
 *.swo
+
+# Scraper file no longer tracked in git
+scraper.py
