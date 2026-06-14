@@ -22,16 +22,26 @@
 
           shellHook = ''
             echo "🌌 Welcome to the DaoStream Nix devShell!"
-            if [ ! -d ".venv" ]; then
-              echo "Initializing virtual environment (.venv)..."
-              python3 -m venv .venv
+            if [ -f "requirements.txt" ]; then
+              if [ ! -d ".venv" ]; then
+                echo "Initializing virtual environment (.venv)..."
+                python3 -m venv .venv
+              fi
+              source .venv/bin/activate
+              echo "Verifying Python dependencies..."
+              pip install --quiet -r requirements.txt
+              echo "----------------------------------------------------"
+              echo "DaoStream is ready! Run 'python3 main.py' to start."
+              echo "----------------------------------------------------"
+            else
+              echo "----------------------------------------------------"
+              echo "Warning: requirements.txt not found in the current directory."
+              echo "Please clone the repo first and run 'nix develop' inside it:"
+              echo "  git clone https://github.com/XiaoXioe/DaoStream.git"
+              echo "  cd DaoStream"
+              echo "  nix develop"
+              echo "----------------------------------------------------"
             fi
-            source .venv/bin/activate
-            echo "Verifying Python dependencies..."
-            pip install --quiet -r requirements.txt
-            echo "----------------------------------------------------"
-            echo "DaoStream is ready! Run 'python3 main.py' to start."
-            echo "----------------------------------------------------"
           '';
         };
       }
