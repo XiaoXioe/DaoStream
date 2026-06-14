@@ -15,6 +15,7 @@
           virtualenv
           curl-cffi
           cryptography
+          browserforge
         ]);
       in
       {
