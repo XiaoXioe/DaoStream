@@ -28,13 +28,16 @@ def run_source_menu(source):
 
         anime_list = []
         if choice == "Latest Donghua":
-            anime_list = source.get_latest()
+            with console.status("[bold green]Fetching latest releases...", spinner="dots"):
+                anime_list = source.get_latest()
         elif choice == "Popular Today":
-            anime_list = source.get_popular()
+            with console.status("[bold green]Fetching popular today...", spinner="dots"):
+                anime_list = source.get_popular()
         elif choice == "Search Donghua":
             query = questionary.text("Enter search keyword:").ask()
             if query:
-                anime_list = source.search(query)
+                with console.status(f"[bold green]Searching for '{query}'...", spinner="dots"):
+                    anime_list = source.search(query)
 
         if not anime_list:
             console.print("[red]No anime found.[/red]")
@@ -48,7 +51,8 @@ def run_source_menu(source):
         if anime_choice == "Back":
             continue
 
-        episodes = source.get_episodes(anime_choice["link"])
+        with console.status("[bold green]Fetching episode list...", spinner="dots"):
+            episodes = source.get_episodes(anime_choice["link"])
         if not episodes:
             console.print("[red]No episodes found.[/red]")
             continue
@@ -61,7 +65,8 @@ def run_source_menu(source):
         if ep_choice == "Back":
             continue
 
-        servers = source.get_servers(ep_choice["link"])
+        with console.status("[bold green]Fetching stream servers...", spinner="dots"):
+            servers = source.get_servers(ep_choice["link"])
         if not servers:
             console.print("[red]No servers found.[/red]")
             continue
