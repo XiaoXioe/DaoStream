@@ -1,0 +1,5 @@
+questionary>=2.0.1
+rich>=13.7.0
+scrapling>=0.1.8
+requests>=2.31.0
+cryptography>=41.0.0

@@ -1,19 +1,21 @@
-import subprocess
-import socket
-import threading
+import base64
 import hashlib
-import re
 import random
+import re
+import socket
 import string
+import subprocess
+import threading
 import time
-import requests
-from urllib.parse import urlparse, urljoin, urlunparse, parse_qsl, urlencode
 from http.server import BaseHTTPRequestHandler, HTTPServer
-import urllib3
+from urllib.parse import parse_qsl, urlencode, urljoin, urlparse, urlunparse
+
 import questionary
-from rich.console import Console
+import requests
+import urllib3
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from rich.console import Console
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 console = Console()
@@ -176,9 +178,9 @@ def select_m3u8_resolution(url, referer=None, user_agent=None):
         for line in lines:
             line = line.strip()
             if line.startswith("#EXT-X-STREAM-INF:"):
-                res_match = re.search(r'RESOLUTION=(\d+x\d+)', line)
+                res_match = re.search(r"RESOLUTION=(\d+x\d+)", line)
                 resolution = res_match.group(1) if res_match else None
-                bw_match = re.search(r'BANDWIDTH=(\d+)', line)
+                bw_match = re.search(r"BANDWIDTH=(\d+)", line)
                 bandwidth = int(bw_match.group(1)) if bw_match else None
                 name_match = re.search(r'NAME="([^"]+)"', line)
                 name = name_match.group(1) if name_match else None
@@ -186,7 +188,7 @@ def select_m3u8_resolution(url, referer=None, user_agent=None):
                 current_info = {
                     "resolution": resolution,
                     "bandwidth": bandwidth,
-                    "name": name
+                    "name": name,
                 }
             elif line and not line.startswith("#") and current_info:
                 sub_url = urljoin(url, line)
@@ -230,10 +232,7 @@ def select_m3u8_resolution(url, referer=None, user_agent=None):
         if len(choices) <= 2:
             return url
 
-        choice = questionary.select(
-            "Select video resolution:",
-            choices=choices
-        ).ask()
+        choice = questionary.select("Select video resolution:", choices=choices).ask()
 
         if choice:
             return choice
@@ -302,7 +301,9 @@ def resolve_server_url(url):
                 ).get("auto", {}).get("url")
                 if hls_url:
                     console.print(f"[green]Resolved Rumble HLS URL:[/green] {hls_url}")
-                    return select_m3u8_resolution(hls_url, referer="https://rumble.com/", user_agent=ua)
+                    return select_m3u8_resolution(
+                        hls_url, referer="https://rumble.com/", user_agent=ua
+                    )
         except Exception as e:
             console.print(f"[red]Rumble resolution failed:[/red] {e}")
 
@@ -314,7 +315,9 @@ def resolve_server_url(url):
                 video_id = match.group(1)
                 dtube_hls = f"https://nas1.d.tube/videos/{video_id}/master.m3u8"
                 console.print(f"[green]Resolved D-Tube HLS URL:[/green] {dtube_hls}")
-                return select_m3u8_resolution(dtube_hls, referer="https://play.d.tube/", user_agent=ua)
+                return select_m3u8_resolution(
+                    dtube_hls, referer="https://play.d.tube/", user_agent=ua
+                )
         except Exception as e:
             console.print(f"[red]D-Tube resolution failed:[/red] {e}")
 
@@ -395,6 +398,7 @@ def resolve_server_url(url):
             ).decode("utf-8")
 
             import json
+
             media_json = json.loads(decrypted_text)
 
             sources = media_json.get("mp4", {}).get("sources", [])
@@ -507,13 +511,18 @@ def resolve_server_url(url):
                     dec_data = dec_data[:-pad_len]
 
                 import json
+
                 data = json.loads(dec_data.decode("utf-8"))
                 source_url = data.get("source")
                 if source_url:
                     console.print(
                         f"[green]Resolved RPMShare source URL:[/green] {source_url}"
                     )
-                    return select_m3u8_resolution(source_url, referer=f"https://{parsed_url.netloc}/", user_agent=ua)
+                    return select_m3u8_resolution(
+                        source_url,
+                        referer=f"https://{parsed_url.netloc}/",
+                        user_agent=ua,
+                    )
         except Exception as e:
             console.print(f"[red]RPMShare resolution failed:[/red] {e}")
 
@@ -570,7 +579,9 @@ def resolve_server_url(url):
                         hls_referer = "https://play.d.tube/"
                     elif "rumble.com" in direct_url:
                         hls_referer = "https://rumble.com/"
-                    return select_m3u8_resolution(direct_url, referer=hls_referer, user_agent=ua)
+                    return select_m3u8_resolution(
+                        direct_url, referer=hls_referer, user_agent=ua
+                    )
         except Exception as e:
             console.print(f"[red]Analysis failed:[/red] {e}")
 
@@ -591,6 +602,7 @@ def resolve_server_url(url):
 
 def json_loads(text):
     import json
+
     return json.loads(text)
 
 
