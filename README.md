@@ -33,7 +33,9 @@ To run `DaoStream`, you need:
 
 ---
 
-## ⚙️ Installation
+## ⚙️ Installation & Setup
+
+### Option 1: Standard Installation (Linux, macOS, Windows)
 
 1. **Clone the Repository**:
    ```bash
@@ -45,6 +47,16 @@ To run `DaoStream`, you need:
    ```bash
    pip install -r requirements.txt
    ```
+
+### Option 2: Nix / NixOS (Flake)
+
+If you are using Nix or NixOS with Flakes enabled, you can enter the development shell instantly. This shell automatically provisions Python, virtualenv, and the `mpv` player on your path:
+
+```bash
+nix develop
+```
+
+This will automatically configure a local `.venv` directory, install all required dependencies, and launch you directly into a ready-to-run environment.
 
 ---
 
@@ -76,6 +88,7 @@ DaoStream/
 ├── main.py                    # Main CLI interactive loop & user menus
 ├── requirements.txt           # Python library dependencies
 ├── LICENSE                    # MIT License
+├── flake.nix                  # Nix Flake environment definition
 ├── sources/                   # Scraper sources directory
 │   ├── __init__.py            # Source registration
 │   ├── base.py                # Abstract BaseSource class
@@ -112,7 +125,7 @@ Adding a new website scraper is simple due to `DaoStream`'s modular design:
    ```
 
 2. **Register the Source**:
-   Import and add your class instance inside `sources/get_sources()` in [sources/__init__.py](file:///home/klein-moretti/PersistentData/anichin/sources/__init__.py):
+   Import and add your class instance inside `sources/get_sources()` in [sources/__init__.py](sources/__init__.py):
    ```python
    from .mysource import MyCustomSource
    
