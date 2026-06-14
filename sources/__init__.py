@@ -1,5 +1,6 @@
 from .base import BaseSource
 from .anichin import AnichinSource
+from .donghuafun import DonghuaFunSource
 
 def get_sources():
     """
@@ -8,5 +9,6 @@ def get_sources():
     in a new file under this package, and add its instance here.
     """
     return [
-        AnichinSource()
+        AnichinSource(),
+        DonghuaFunSource()
     ]
